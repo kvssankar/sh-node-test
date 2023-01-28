@@ -1,6 +1,6 @@
 {
   "name": "shortloop-node-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "types": "index.d.ts",
@@ -9,8 +9,5 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "axios": "^1.2.1"
-  }
+  "license": "ISC"
 }
