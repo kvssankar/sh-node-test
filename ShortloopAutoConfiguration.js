@@ -9,22 +9,31 @@ const DiscoveredApiBufferManager_1 = __importDefault(require("./buffer/Discovere
 const ApiProcessor_1 = __importDefault(require("./filter/ApiProcessor"));
 const ShortloopNodeFilter_1 = __importDefault(require("./filter/ShortloopNodeFilter"));
 const SDKVersion_1 = __importDefault(require("./SDKVersion"));
+const Validators_1 = require("./common/utils/Validators");
 class ShortloopAutoConfiguration {
     constructor(url, userApplicationName) {
-        this.url = url === null || url === void 0 ? void 0 : url.trim();
-        this.userApplicationName = userApplicationName === null || userApplicationName === void 0 ? void 0 : userApplicationName.trim();
+        this.url = url.trim();
+        this.userApplicationName = userApplicationName.trim();
+    }
+    static isValidConfig(options) {
+        if ((0, Validators_1.isNil)(options)) {
+            let message = "Mandatory Config { url: string, userApplicationName: string } is missing";
+            console.log(message);
+            return false;
+        }
+        if ((0, Validators_1.isNil)(options.url)) {
+            let message = "Mandatory Config `url` is missing";
+            console.log(message);
+            return false;
+        }
+        if ((0, Validators_1.isNil)(options.userApplicationName)) {
+            let message = "Mandatory Config `userApplicationName` is missing";
+            console.log(message);
+            return false;
+        }
+        return true;
     }
     init() {
-        if (!this.url) {
-            let message = "Mandatory Config `shortloop.url` is missing";
-            console.log(message);
-            return false;
-        }
-        if (!this.userApplicationName) {
-            let message = "Mandatory Config `shortloop.userApplicationName` is missing";
-            console.log(message);
-            return false;
-        }
         //   let randomId:number = Math.floor(Math.random() * 1000000000);
         let randomId = 1;
         let agentId = randomId.toString();

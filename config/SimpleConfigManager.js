@@ -52,7 +52,7 @@ class SimpleConfigManager {
         return __awaiter(this, void 0, void 0, function* () {
             let configOrError = yield this.fetchConfig();
             if (configOrError.errorCode) {
-                this.scheduleConfigRefresh(1);
+                this.scheduleConfigRefresh(60);
                 this.onUnSuccessfulConfigFetch();
             }
             else {
@@ -81,7 +81,7 @@ class SimpleConfigManager {
             };
             // @ts-ignore
             let queryString = Object.keys(queryParams).map((key) => key + "=" + queryParams[key]).join("&");
-            let headers = Object.assign({ "Content-Type": "application/json" }, SDKVersion_1.default);
+            let headers = Object.assign({ "Accept": "application/json", "Connection": "close" }, SDKVersion_1.default);
             let url = this.ctUrl + this.getUri() + "?" + queryString;
             try {
                 let agentConfig;
@@ -93,19 +93,12 @@ class SimpleConfigManager {
                         SDKLogger_1.default.error("While parsing config response: " + e);
                     }
                 });
-                console.log("agentConfig", agentConfig);
-                console.log("agentConfig", agentConfig === null || agentConfig === void 0 ? void 0 : agentConfig.getRegisteredApiConfigs());
-                console.log("agentConfig", agentConfig === null || agentConfig === void 0 ? void 0 : agentConfig.getBlackListRules());
-                console.log("agentConfig", agentConfig === null || agentConfig === void 0 ? void 0 : agentConfig.getConfigFetchFreqInSec());
-                console.log("agentConfig", agentConfig === null || agentConfig === void 0 ? void 0 : agentConfig.getRegisteredApiConfigs()[0].getUri().getUriPath());
-                console.log("agentConfig", agentConfig === null || agentConfig === void 0 ? void 0 : agentConfig.getRegisteredApiConfigs()[0].getMethod());
                 if (agentConfig) {
                     if (AgentConfigUtils_1.default.isConfigValid(agentConfig)) {
-                        console.log("Config fetched successfully", agentConfig);
                         return new ConfigOrError_1.default(agentConfig, null);
                     }
                     else {
-                        console.log("Config fetched successfully but invalid", agentConfig);
+                        SDKLogger_1.default.error("Config fetched successfully but invalid");
                         return new ConfigOrError_1.default(null, ShortloopCommonConstant_1.ConfigErrorCode.INVALID_CONFIG);
                     }
                 }
@@ -114,7 +107,7 @@ class SimpleConfigManager {
                 }
             }
             catch (e) {
-                console.log("Error while parsing config", e);
+                SDKLogger_1.default.error("Error while parsing config: " + e);
                 return new ConfigOrError_1.default(null, ShortloopCommonConstant_1.ConfigErrorCode.PARSE_ERROR);
             }
         });

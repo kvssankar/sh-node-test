@@ -12,10 +12,10 @@ class BlackListRule {
         this.method = data.method;
     }
     isValid() {
-        if ((0, Validators_1.isNotNil)(this.blackListType) && (0, Validators_1.isNotNil)(this.matchValues) && (0, Validators_1.isNotNil)(this.method)) {
-            return true;
+        if ((0, Validators_1.isNil)(this.blackListType) || (0, Validators_1.isNil)(this.matchValues) || (0, Validators_1.isNil)(this.method)) {
+            return false;
         }
-        return false;
+        return true;
     }
     matchesUri(uri, method) {
         if (!this.isValid()) {

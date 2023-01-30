@@ -4,6 +4,7 @@ declare class ShortloopAutoConfiguration {
     private readonly userApplicationName;
     private nodeFilter;
     constructor(url: string, userApplicationName: string);
+    static isValidConfig(options: any): boolean;
     init(): boolean;
     getNodeFilter(): ShortloopNodeFilter | undefined;
 }

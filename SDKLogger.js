@@ -15,7 +15,7 @@ class SDKLogger {
     static log(message) {
         //add timestamp and Info/Debug/Error
         let formattedMessage = new Date() + " -ShortloopSDK Info: " + message;
-        if (this.isDebug)
+        if (this.logginEnabled)
             this.logger.log(formattedMessage);
     }
     static error(message) {
@@ -24,5 +24,5 @@ class SDKLogger {
     }
 }
 SDKLogger.logger = new ConsoleLogger();
-SDKLogger.isDebug = false;
+SDKLogger.logginEnabled = false;
 exports.default = SDKLogger;

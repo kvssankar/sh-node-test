@@ -4,7 +4,7 @@ interface Logger {
 }
 declare class SDKLogger {
     private static logger;
-    private static isDebug;
+    static logginEnabled: boolean;
     static setLogger(logger: Logger): void;
     static log(message: string): void;
     static error(message: string): void;
