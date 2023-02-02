@@ -94,6 +94,7 @@ class SimpleConfigManager {
                     }
                 });
                 if (agentConfig) {
+                    console.log("Agent config: " + agentConfig);
                     if (AgentConfigUtils_1.default.isConfigValid(agentConfig)) {
                         return new ConfigOrError_1.default(agentConfig, null);
                     }
@@ -107,6 +108,7 @@ class SimpleConfigManager {
                 }
             }
             catch (e) {
+                console.log("Error while fetching config: " + e);
                 SDKLogger_1.default.error("Error while parsing config: " + e);
                 return new ConfigOrError_1.default(null, ShortloopCommonConstant_1.ConfigErrorCode.PARSE_ERROR);
             }
