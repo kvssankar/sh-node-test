@@ -4,11 +4,11 @@ interface IAgentConfig {
     bufferSyncFreqInSec: number;
     captureApiSample: boolean;
     configFetchFreqInSec: number;
-    registeredApiConfigs: IApiConfig[];
+    registeredApiConfigs: IApiConfig[] | undefined;
     timestamp: Date;
     discoveryBufferSize: number;
     discoveryBufferSizePerApi: number;
-    blackListRules: IBlackListRule[];
+    blackListRules: IBlackListRule[] | undefined;
 }
 declare class AgentConfig {
     private bufferSyncFreqInSec;

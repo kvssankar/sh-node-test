@@ -7,15 +7,23 @@ const ApiConfig_1 = __importDefault(require("./ApiConfig"));
 const BlackListRule_1 = __importDefault(require("./BlackListRule"));
 class AgentConfig {
     constructor(agentConfig) {
+        this.registeredApiConfigs = [];
         this.blackListRules = [];
+        if (!agentConfig) {
+            throw new Error("agentConfig is null");
+        }
         this.bufferSyncFreqInSec = agentConfig.bufferSyncFreqInSec;
         this.captureApiSample = agentConfig.captureApiSample;
         this.configFetchFreqInSec = agentConfig.configFetchFreqInSec;
         this.timestamp = new Date(agentConfig.timestamp);
         this.discoveryBufferSize = agentConfig.discoveryBufferSize;
         this.discoveryBufferSizePerApi = agentConfig.discoveryBufferSizePerApi;
-        this.registeredApiConfigs = agentConfig.registeredApiConfigs.map((apiConfig) => new ApiConfig_1.default(apiConfig));
-        this.blackListRules = agentConfig.blackListRules.map((blackListRule) => new BlackListRule_1.default(blackListRule));
+        if (agentConfig.registeredApiConfigs && agentConfig.registeredApiConfigs.length > 0) {
+            this.registeredApiConfigs = agentConfig.registeredApiConfigs.map((apiConfig) => new ApiConfig_1.default(apiConfig));
+        }
+        if (agentConfig.blackListRules && agentConfig.blackListRules.length > 0) {
+            this.blackListRules = agentConfig.blackListRules.map((blackListRule) => new BlackListRule_1.default(blackListRule));
+        }
     }
     getBufferSyncFreqInSec() {
         return this.bufferSyncFreqInSec;
