@@ -12,7 +12,9 @@ class BlackListRule {
         this.method = data.method;
     }
     isValid() {
-        if ((0, Validators_1.isNil)(this.blackListType) || (0, Validators_1.isNil)(this.matchValues) || (0, Validators_1.isNil)(this.method)) {
+        if ((0, Validators_1.isNil)(this.blackListType) ||
+            (0, Validators_1.isNil)(this.matchValues) ||
+            (0, Validators_1.isNil)(this.method)) {
             return false;
         }
         return true;

@@ -13,6 +13,7 @@ declare class ShortloopNodeFilter implements ConfigUpdateListener {
     onSuccessfulConfigUpdate(agentConfig: AgentConfig): void;
     private getApiConfig;
     private getObservedApiFromRequest;
-    processReqAndRes(req: any, res: any, next: Function): Promise<void>;
+    processReqAndRes(req: any, res: any, next: Function): void;
+    private isBlackListedApi;
 }
 export default ShortloopNodeFilter;

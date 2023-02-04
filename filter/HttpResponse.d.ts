@@ -2,10 +2,10 @@ declare class HttpResponse {
     private headers;
     private body;
     private statusCode;
-    constructor(headers: any, statusCode: number);
-    getHeaders(): any;
+    constructor(headers: Object, statusCode: number);
+    getHeaders(): Object;
     getBody(): any;
-    setHeaders(headers: any): void;
+    setHeaders(headers: Object): void;
     setBody(body: any): void;
     getStatusCode(): number;
     setStatusCode(statusCode: number): void;

@@ -75,7 +75,7 @@ class DiscoveredApiBufferManagerWorker extends BufferManagerWorker_1.default {
             }
             (0, RequestExecutor_1.postRequest)(this.ctUrl + this.getUri(), contents)
                 .then(() => {
-                console.log("Successfully synced discovered api samples", contents);
+                console.log("Successfully synced discovered api samples");
             })
                 .catch((err) => {
                 SDKLogger_1.default.error("While sending discovered api samples" + err);

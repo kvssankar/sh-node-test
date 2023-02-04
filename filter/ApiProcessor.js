@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -21,64 +12,76 @@ class ApiProcessor {
         this.discoveredApiBufferManager = discoveredApiBufferManager;
     }
     processDiscoveredApi(context, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let worker = this.discoveredApiBufferManager.getWorker();
-            if (!worker) {
-                yield next();
-                return;
-            }
-            let canOffer = worker.canOffer(context.getApiBufferKey());
-            console.log("discover process canOffer", canOffer);
-            context.setPayloadCaptureAttempted(false);
-            const _end = res.end;
-            res.end = function (chunk) {
-                context.setResponse(new HttpResponse_1.default(res.getHeaders(), res.statusCode));
-                _end.apply(res, arguments);
-            };
-            yield next();
-            if (canOffer) {
+        let worker = this.discoveredApiBufferManager.getWorker();
+        if (!worker) {
+            next();
+            return;
+        }
+        let canOffer = worker.canOffer(context.getApiBufferKey());
+        console.log("discover process canOffer", canOffer);
+        context.setPayloadCaptureAttempted(false);
+        const call = () => {
+            return new Promise((resolve, reject) => {
+                const _end = res.end;
+                res.end = function (chunk) {
+                    context.setResponse(new HttpResponse_1.default(res.getHeaders(), res.statusCode));
+                    _end.apply(res, arguments);
+                    resolve();
+                };
+                next();
+            });
+        };
+        call().then(() => {
+            if (canOffer && worker) {
                 this.tryOffering(context, worker);
             }
         });
     }
     processRegisteredApi(context, req, res, next) {
-        return __awaiter(this, void 0, void 0, function* () {
-            let worker = this.registeredApiBufferManager.getWorker();
-            if (!worker) {
-                yield next();
-                return;
-            }
-            context.setPayloadCaptureAttempted(true);
-            let canOffer = worker.canOffer(context.getApiBufferKey());
-            console.log("registered process canOffer", canOffer);
-            let requestPayloadCaptureAttempted = false;
-            let responsePayloadCaptureAttempted = false;
-            if (canOffer) {
-                requestPayloadCaptureAttempted = this.shouldCaptureRequest(context);
-                if (requestPayloadCaptureAttempted) {
-                    try {
-                        if (typeof req.body === "object") {
-                            context.getRequest().setBody(JSON.stringify(req.body));
-                        }
-                        else {
-                            context.getRequest().setBody(req.body);
-                        }
-                    }
-                    catch (err) {
-                        SDKLogger_1.default.error("reading request body" + err);
-                    }
+        let worker = this.registeredApiBufferManager.getWorker();
+        if (!worker) {
+            next();
+            return;
+        }
+        context.setPayloadCaptureAttempted(true);
+        let canOffer = worker.canOffer(context.getApiBufferKey());
+        console.log("registered process canOffer", canOffer);
+        let requestPayloadCaptureAttempted = false;
+        let responsePayloadCaptureAttempted = false;
+        if (!canOffer) {
+            next();
+            return;
+        }
+        requestPayloadCaptureAttempted = this.shouldCaptureRequest(context);
+        if (requestPayloadCaptureAttempted) {
+            try {
+                if (typeof req.body === "object") {
+                    context.getRequest().setBody(JSON.stringify(req.body));
                 }
-                responsePayloadCaptureAttempted = this.shouldCaptureResponse(context);
-                const _end = res.end;
-                const _write = res.write;
-                const chunks = [];
-                res.write = function (chunk) {
-                    if (responsePayloadCaptureAttempted) {
-                        if (chunk)
-                            chunks.push(chunk);
-                    }
-                    _write.apply(res, arguments);
-                };
+                else {
+                    context.getRequest().setBody(req.body);
+                }
+            }
+            catch (err) {
+                SDKLogger_1.default.error("reading request body" + err);
+            }
+        }
+        let startTime = Date.now();
+        responsePayloadCaptureAttempted = this.shouldCaptureResponse(context);
+        context.setRequestPayloadCaptureAttempted(requestPayloadCaptureAttempted);
+        context.setResponsePayloadCaptureAttempted(responsePayloadCaptureAttempted);
+        const _end = res.end;
+        const _write = res.write;
+        const chunks = [];
+        res.write = function (chunk) {
+            if (responsePayloadCaptureAttempted) {
+                if (chunk)
+                    chunks.push(chunk);
+            }
+            _write.apply(res, arguments);
+        };
+        const call = () => {
+            return new Promise((resolve, reject) => {
                 res.end = function (chunk) {
                     var _a;
                     try {
@@ -87,6 +90,7 @@ class ApiProcessor {
                                 chunks.push(chunk);
                         }
                         context.setResponse(new HttpResponse_1.default(res.getHeaders(), res.statusCode));
+                        context.setLatency(Date.now() - startTime);
                         if (responsePayloadCaptureAttempted) {
                             const body = Buffer.concat(chunks).toString("utf8");
                             (_a = context.getResponse()) === null || _a === void 0 ? void 0 : _a.setBody(body);
@@ -96,20 +100,13 @@ class ApiProcessor {
                         SDKLogger_1.default.error("reading response body of captured api" + err);
                     }
                     _end.apply(res, arguments);
+                    resolve();
                 };
-                context.setRequestPayloadCaptureAttempted(requestPayloadCaptureAttempted);
-                context.setResponsePayloadCaptureAttempted(responsePayloadCaptureAttempted);
-            }
-            let startTime = 0;
-            let shouldComputeLatency = canOffer;
-            if (shouldComputeLatency) {
-                startTime = Date.now();
-            }
-            yield next();
-            if (shouldComputeLatency) {
-                context.setLatency(Date.now() - startTime);
-            }
-            if (canOffer) {
+                next();
+            });
+        };
+        call().then(() => {
+            if (canOffer && worker) {
                 this.tryOffering(context, worker);
             }
         });

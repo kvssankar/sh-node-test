@@ -5,8 +5,8 @@ declare class ApiProcessor {
     private readonly registeredApiBufferManager;
     private readonly discoveredApiBufferManager;
     constructor(registeredApiBufferManager: RegisteredApiBufferManager, discoveredApiBufferManager: DiscoveredApiBufferManager);
-    processDiscoveredApi(context: RequestResponseContext, res: any, next: Function): Promise<void>;
-    processRegisteredApi(context: RequestResponseContext, req: any, res: any, next: Function): Promise<void>;
+    processDiscoveredApi(context: RequestResponseContext, res: any, next: Function): void;
+    processRegisteredApi(context: RequestResponseContext, req: any, res: any, next: Function): void;
     private tryOffering;
     private shouldCaptureRequest;
     private shouldCaptureResponse;
