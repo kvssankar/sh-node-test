@@ -18,7 +18,6 @@ class ApiProcessor {
             return;
         }
         let canOffer = worker.canOffer(context.getApiBufferKey());
-        console.log("discover process canOffer", canOffer);
         context.setPayloadCaptureAttempted(false);
         const call = () => {
             return new Promise((resolve, reject) => {
@@ -45,7 +44,6 @@ class ApiProcessor {
         }
         context.setPayloadCaptureAttempted(true);
         let canOffer = worker.canOffer(context.getApiBufferKey());
-        console.log("registered process canOffer", canOffer);
         let requestPayloadCaptureAttempted = false;
         let responsePayloadCaptureAttempted = false;
         if (!canOffer) {

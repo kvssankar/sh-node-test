@@ -101,9 +101,7 @@ class RegisteredApiBufferManagerWorker extends BufferManagerWorker_1.default {
                     break;
                 }
                 (0, RequestExecutor_1.postRequest)(this.ctUrl + this.getUri(), [apiSample])
-                    .then(() => {
-                    console.log("Registered api sample synced successfully");
-                })
+                    .then(() => { })
                     .catch((error) => {
                     SDKLogger_1.default.error("While sending registered api sample: " + error);
                 });
